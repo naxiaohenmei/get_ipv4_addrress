@@ -35,7 +35,10 @@ std::wstring String2WString(const std::string& s)
 
 void GetAdaptersAddressesInfo()
 {
-	ULONG outBufLen = sizeof(IP_ADAPTER_ADDRESSES);
+	 // 一次性申请超过15K的内存，不用多次分配，以提高效率，第一次调用GetAdaptersAddresses会提示内存不够
+	 // 并把所需内存大小赋值给outBufLen，然后再次申请内存
+	ULONG outBufLen = sizeof(IP_ADAPTER_ADDRESSES) * 403;
+	
 	PIP_ADAPTER_ADDRESSES pAddresses = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
 	if (GetAdaptersAddresses(AF_INET, 0, NULL, pAddresses, &outBufLen) == ERROR_BUFFER_OVERFLOW)
 	{
